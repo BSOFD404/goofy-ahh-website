@@ -91,72 +91,7 @@ body {
   <video id="rickrollPlayer" src="{{ url_for('static', filename='rickroll.mp4') }}" autoplay muted playsinline loop></video>
 </div>
 
-<script>
-  const reconnectButton = document.getElementById('reconnectButton');
-  const connectionLostDiv = document.getElementById('connectionLost');
-  const rickrollVideoDiv = document.getElementById('rickrollVideo');
-  const rickrollPlayer = document.getElementById('rickrollPlayer');
-
-  let rickrollCount = 0;
-
-  reconnectButton.addEventListener('click', () => {
-    connectionLostDiv.style.display = 'none';
-    rickrollVideoDiv.style.display = 'block';
-    rickrollCount++;
-    sendTelegramMessage("Someone was rickrolled!");
-    rickrollPlayer.muted = false; // Try to unmute the video
-    rickrollPlayer.play(); // Ensure video plays
-  });
-
-  // Add an event listener for video errors
-  rickrollPlayer.addEventListener('error', (event) => {
-    console.error('Video playback error:', event);
-    alert('Error playing video.  Check the console for details.'); // Provide user feedback
-  });
-
-  function sendTelegramMessage(message) {
-    const telegramBotToken = '7719637928:AAFsQ6QHSH7z_GUeu6HMYl62yngKQPsRL_g';
-    const telegramChatId = '6013637983';
-    const apiUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
-
-    fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: telegramChatId,
-        text: message,
-      }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.ok) {
-        console.log('Telegram message sent successfully!');
-      } else {
-        console.error('Error sending Telegram message:', data);
-      }
-    })
-    .catch(error => {
-      console.error('Error sending Telegram message:', error);
-    });
-  }
-
-  // Telegram Bot Command Handling (Simulated) - REMOVE THIS FOR REAL IMPLEMENTATION
-  window.addEventListener('keydown', function(event) {
-    if (event.key === '/') {
-      let command = prompt("Enter command:");
-      if (command === 'many') {
-        alert("Rickrolled count: " + rickrollCount);
-      } else if (command === 'reset' && confirm("Are you sure you want to reset the count? (Only for you!)")) {
-        rickrollCount = 0;
-        alert("Rickroll count reset!");
-      } else {
-        alert("Unknown command.");
-      }
-    }
-  });
-</script>
 
 </body>
 </html>
+
