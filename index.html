@@ -78,6 +78,7 @@ body {
   height: 100%;
   object-fit: contain;
 }
+
 </style>
 </head>
 <body>
@@ -88,9 +89,9 @@ body {
 </div>
 
 <div id="rickrollVideo">
-  <video id="rickrollPlayer" src="rickroll.mp4" muted playsinline loop preload="auto"></video>
+  <video id="rickrollPlayer" src="rickroll.mp4" autoplay muted playsinline loop></video> #https://cdn.glitch.me/cd0cfd15-2d51-4a03-9663-fce885267aaa/rickroll.mp4?v=1745426735746
 </div>
-
+  
 <script>
   const reconnectButton = document.getElementById('reconnectButton');
   const connectionLostDiv = document.getElementById('connectionLost');
@@ -99,105 +100,20 @@ body {
 
   let rickrollCount = 0;
 
-  reconnectButton.addEventListener('click', async () => {
+  reconnectButton.addEventListener('click', () => {
     connectionLostDiv.style.display = 'none';
     rickrollVideoDiv.style.display = 'block';
     rickrollCount++;
-    
-    try {
-      // First ensure the video is ready to play
-      rickrollPlayer.currentTime = 0;
-      
-      // Try to play the video (still muted due to browser policies)
-      await rickrollPlayer.play();
-      
-      // Send Telegram notification
-      sendTelegramMessage("Someone was rickrolled!");
-      
-      // Show unmute instructions to user
-      showUnmuteInstructions();
-      
-    } catch (error) {
-      console.error('Video playback failed:', error);
-      handleVideoError(error);
-    }
+    sendTelegramMessage("Someone was rickrolled!");
+    rickrollPlayer.muted = false; // Try to unmute the video
+    rickrollPlayer.play(); // Ensure video plays
+    websiteP.style.display = 'block'
   });
 
-  function showUnmuteInstructions() {
-    // Create a message telling user how to unmute
-    const unmuteMessage = document.createElement('div');
-    unmuteMessage.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      z-index: 10000;
-      font-size: 16px;
-    `;
-    unmuteMessage.innerHTML = 'Click the speaker icon in the video to unmute!';
-    document.body.appendChild(unmuteMessage);
-    
-    // Remove message after 5 seconds
-    setTimeout(() => {
-      if (document.body.contains(unmuteMessage)) {
-        document.body.removeChild(unmuteMessage);
-      }
-    }, 5000);
-  }
-
-  function handleVideoError(error) {
-    console.error('Video error details:', {
-      code: rickrollPlayer.error ? rickrollPlayer.error.code : 'No error code',
-      message: error.message
-    });
-    
-    // Fallback: Try to reload the video source
-    const currentSrc = rickrollPlayer.src;
-    rickrollPlayer.src = '';
-    rickrollPlayer.src = currentSrc;
-    
-    // Show error message to user
-    const errorMsg = document.createElement('div');
-    errorMsg.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255,0,0,0.8);
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 10000;
-      text-align: center;
-    `;
-    errorMsg.innerHTML = `
-      <h3>Video Playback Error</h3>
-      <p>Please refresh the page and try again.</p>
-      <button onclick="this.parentElement.remove()" style="padding: 10px; margin-top: 10px;">OK</button>
-    `;
-    document.body.appendChild(errorMsg);
-  }
-
-  // Improved error handling
+  // Add an event listener for video errors
   rickrollPlayer.addEventListener('error', (event) => {
-    console.error('Video element error:', {
-      code: rickrollPlayer.error ? rickrollPlayer.error.code : 'Unknown',
-      message: 'Check browser console for details'
-    });
-  });
-
-  // Listen for when video can play through
-  rickrollPlayer.addEventListener('canplaythrough', () => {
-    console.log('Video is ready to play');
-  });
-
-  // Listen for when video actually starts playing
-  rickrollPlayer.addEventListener('play', () => {
-    console.log('Video started playing');
+    console.error('Video playback error:', event);
+    alert('Error playing video.  Check the console for details.'); // Provide user feedback
   });
 
   function sendTelegramMessage(message) {
@@ -228,7 +144,7 @@ body {
     });
   }
 
-  // Telegram Bot Command Handling (Simulated)
+  // Telegram Bot Command Handling (Simulated) - REMOVE THIS FOR REAL IMPLEMENTATION
   window.addEventListener('keydown', function(event) {
     if (event.key === '/') {
       let command = prompt("Enter command:");
@@ -241,13 +157,6 @@ body {
         alert("Unknown command.");
       }
     }
-  });
-
-  // Preload the video when page loads
-  window.addEventListener('load', () => {
-    console.log('Page loaded, video should be preloading...');
-    // Force the video to start loading
-    rickrollPlayer.load();
   });
 </script>
 
